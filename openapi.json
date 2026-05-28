@@ -1,0 +1,220 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Direkt API",
+    "description": "Accept crypto payments directly — no custodians, no prefunding.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://159.223.110.114:3000",
+      "description": "Production"
+    }
+  ],
+  "security": [
+    { "bearerAuth": [] }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "paths": {
+    "/api/quote": {
+      "post": {
+        "summary": "Create a quote",
+        "description": "Generate a one-time deposit address for a cross-chain payment.",
+        "operationId": "createQuote",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["fromChainId", "toChainId", "fromToken", "toToken", "amount", "recipient"],
+                "properties": {
+                  "fromChainId": {
+                    "type": "integer",
+                    "description": "Source chain ID",
+                    "example": 8453
+                  },
+                  "toChainId": {
+                    "type": "integer",
+                    "description": "Destination chain ID",
+                    "example": 56
+                  },
+                  "fromToken": {
+                    "type": "string",
+                    "description": "Token address on source chain. Use 0x000...000 for native token.",
+                    "example": "0x0000000000000000000000000000000000000000"
+                  },
+                  "toToken": {
+                    "type": "string",
+                    "description": "Token address on destination chain. Use 0x000...000 for native token.",
+                    "example": "0x0000000000000000000000000000000000000000"
+                  },
+                  "amount": {
+                    "type": "string",
+                    "description": "Amount in human-readable units",
+                    "example": "1"
+                  },
+                  "recipient": {
+                    "type": "string",
+                    "description": "Wallet address to receive funds on destination chain",
+                    "example": "0xa110c77fa4b07ab601e63edEAd99ddb8f1df22c"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Quote created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "example": "pay_abc123" },
+                    "status": { "type": "string", "example": "pending" },
+                    "depositAddress": { "type": "string", "example": "0xAbC1234567890abcdef1234567890abcdef123456" },
+                    "fromChainId": { "type": "integer", "example": 8453 },
+                    "toChainId": { "type": "integer", "example": 56 },
+                    "fromToken": { "type": "string" },
+                    "toToken": { "type": "string" },
+                    "amount": { "type": "string", "example": "1" },
+                    "recipient": { "type": "string" },
+                    "expiresAt": { "type": "string", "example": "2025-01-01T12:30:00Z" },
+                    "createdAt": { "type": "string", "example": "2025-01-01T12:00:00Z" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/status/{id}": {
+      "get": {
+        "summary": "Get payment status",
+        "description": "Fetch the current status of a payment by ID.",
+        "operationId": "getStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Payment ID returned from POST /api/quote",
+            "schema": { "type": "string", "example": "pay_abc123" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "status": { "type": "string", "enum": ["pending", "detected", "confirmed", "completed", "expired", "failed"] },
+                    "amount": { "type": "string" },
+                    "fromChainId": { "type": "integer" },
+                    "toChainId": { "type": "integer" },
+                    "txHash": { "type": "string" },
+                    "confirmations": { "type": "integer" },
+                    "recipient": { "type": "string" },
+                    "confirmedAt": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chains": {
+      "get": {
+        "summary": "List supported chains",
+        "description": "Returns all chains Direkt supports.",
+        "operationId": "getChains",
+        "responses": {
+          "200": {
+            "description": "List of chains",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" },
+                      "chainId": { "type": "integer" },
+                      "nativeToken": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/currencies": {
+      "get": {
+        "summary": "List supported tokens",
+        "description": "Returns all tokens and the chains they are available on.",
+        "operationId": "getCurrencies",
+        "responses": {
+          "200": {
+            "description": "List of tokens",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "symbol": { "type": "string" },
+                      "name": { "type": "string" },
+                      "chains": { "type": "array", "items": { "type": "string" } }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "summary": "Health check",
+        "description": "Check if the API is online. No authentication required.",
+        "operationId": "getHealth",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" },
+                    "uptime": { "type": "integer", "example": 3600 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

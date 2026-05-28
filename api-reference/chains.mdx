@@ -1,24 +1,4 @@
 ---
-title: "GET /api/chains"
-description: "List all supported chains."
+title: "List Chains"
+openapi: "GET /api/chains"
 ---
-
-## Request
-
-```
-GET http://159.223.110.114:3000/api/chains
-Authorization: Bearer YOUR_API_KEY
-```
-
-## Response
-
-```json
-[
-  { "id": "ETH", "name": "Ethereum", "nativeToken": "ETH" },
-  { "id": "BSC", "name": "BNB Smart Chain", "nativeToken": "BNB" },
-  { "id": "POLYGON", "name": "Polygon", "nativeToken": "MATIC" },
-  { "id": "ARBITRUM", "name": "Arbitrum", "nativeToken": "ETH" },
-  { "id": "BASE", "name": "Base", "nativeToken": "ETH" },
-  { "id": "TRON", "name": "Tron", "nativeToken": "TRX" }
-]
-```
