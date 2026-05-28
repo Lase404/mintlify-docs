@@ -14,25 +14,73 @@ curl -X POST http://159.223.110.114:3000/api/quote \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "amount": "50",
-    "currency": "USDT",
-    "chain": "BSC",
-    "reference": "order_123"
-  }'
+		"fromChainId": 8453,
+		"toChainId": 56,
+		"fromToken": "0x0000000000000000000000000000000000000000",
+		"toToken": "0x0000000000000000000000000000000000000000",
+		"amount": "1",
+		"recipient": "0xa110c77fa4b07ab601e63edEAd99ddb8f1df22c"
+}'
 ```
 
 **Response:**
 
 ```json
 {
-  "id": "pay_abc123",
-  "status": "pending",
-  "depositAddress": "0xAbC1234...",
-  "amount": "50",
-  "currency": "USDT",
-  "chain": "BSC",
-  "expiresAt": "2025-01-01T12:30:00Z",
-  "reference": "order_123"
+    "success": true,
+    "quoteId": "e8b287fe-14c6-4605-8bea-605400892c04",
+    "expiresIn": 300,
+    "send": {
+        "depositAddress": "0xa00f48aa41c72be710a41eda5a17ecde67905aee",
+        "chain": {
+            "id": 8453,
+            "name": "Base"
+        },
+        "token": {
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "name": "Ether",
+            "decimals": 18
+        },
+        "amount": "1"
+    },
+    "receive": {
+        "chain": {
+            "id": 56,
+            "name": "BNB Chain"
+        },
+        "token": {
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "BNB",
+            "name": "Binance Coin",
+            "decimals": 18
+        },
+        "estimatedAmount": "3.120246021510230291",
+        "estimatedAmountUsd": "1990.822089"
+    },
+    "recipient": "0xa110c77fa4b07ab601e63ecd65e99ddb8f1df6ec",
+    "fees": {
+        "totalUsd": "13.4645",
+        "gas": {
+            "amount": "0.000000144707674639",
+            "usd": "0.000290",
+            "currency": "ETH"
+        },
+        "relayer": {
+            "amount": "0.001717040675824363",
+            "usd": "3.441771",
+            "currency": "ETH"
+        },
+        "app": {
+            "amount": "0.005",
+            "usd": "10.022392",
+            "currency": "ETH"
+        }
+    },
+    "estimatedTime": "1s",
+    "steps": 1,
+    "statusUrl": "/api/status/e8b287fe-14c6-4605-8bea-605400892c04",
+    "depositNote": "Send exactly this amount to the deposit address. Execution begins automatically."
 }
 ```
 
@@ -47,16 +95,51 @@ curl http://159.223.110.114:3000/api/status/pay_abc123 \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
+####  Response:
+
+```json
+{
+    "success": true,
+    "quoteId": "e8b287fe-14c6-4605-8bea-605400892c04",
+    "status": "AWAITING_DEPOSIT",
+    "createdAt": 1780008351,
+    "expiresAt": 1780008651,
+    "depositAddress": "0xa00f48aa41c72be710a41eda5a17ecde67905aee",
+    "deposit": null,
+    "gas": null,
+    "execution": {
+        "startedAt": null,
+        "completedAt": null,
+        "outputTxHash": null,
+        "steps": []
+    },
+    "route": {
+        "from": {
+            "chainId": 8453,
+            "chainName": "Base",
+            "token": "0x0000000000000000000000000000000000000000"
+        },
+        "to": {
+            "chainId": 56,
+            "chainName": "BNB Chain",
+            "token": "0x0000000000000000000000000000000000000000"
+        },
+        "amount": "1000000000000000000",
+        "recipient": "0xa110c77fa4b07ab601e63ecd65e99ddb8f1df6ec"
+    },
+    "error": null
+}
+```
+
 Poll every 5–10 seconds until `status` is `confirmed` or `completed`.
 
 | Status | Meaning |
 | --- | --- |
-| `pending` | Waiting for the user to send |
-| `detected` | Transaction seen on-chain, waiting for confirmations |
-| `confirmed` | Enough confirmations — safe to fulfil |
-| `completed` | Fully settled |
-| `expired` | No payment received before expiry |
-| `failed` | Payment failed or wrong amount |
+| `AWAITING_DEPOSIT` | Waiting for the user to send |
+| `EXECUTING` | Transaction seen on-chain, waiting for confirmations |
+| `COMPLETED` | Fully settled |
+| `EXPIRED` | No payment received before expiry |
+| `FAILED` | Payment failed or wrong amount |
 
 ## Next steps
 
