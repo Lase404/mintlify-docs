@@ -1,27 +1,29 @@
 ---
 title: "Supported Chains"
-description: "Full list of chains and tokens Direkt supports."
+description: "All chains available on Direkt."
 ---
 
-## Chains
+Use `GET /api/chains` to fetch the live list at any time.
 
-| Chain | `chain` value | Native token | EVM? |
+```bash
+curl --location 'http://159.223.110.114:3000/api/chains' \
+  --header 'Authorization: Bearer YOUR_API_KEY'
+```
+
+## Current chains
+
+| Chain ID | Name | Short Name | Native Token |
 |---|---|---|---|
-| Ethereum | `ETH` | ETH | Yes |
-| BNB Smart Chain | `BSC` | BNB | Yes |
-| Polygon | `POLYGON` | MATIC | Yes |
-| Arbitrum | `ARBITRUM` | ETH | Yes |
-| Base | `BASE` | ETH | Yes |
-| Tron | `TRON` | TRX | No |
+| 1 | Ethereum | eth | ETH |
+| 10 | Optimism | op | ETH |
+| 56 | BNB Chain | bnb | BNB |
+| 137 | Polygon | matic | MATIC |
+| 8453 | Base | base | ETH |
+| 42161 | Arbitrum One | arb | ETH |
+| 42220 | Celo | celo | CELO |
+| 43114 | Avalanche | avax | AVAX |
+| 792703809 | Solana | sol | SOL |
 
-## Supported tokens
+Use the `id` as `fromChainId` or `toChainId` in `POST /api/quote`.
 
-| Token | `currency` value | Chains |
-|---|---|---|
-| Tether USD | `USDT` | ETH, BSC, POLYGON, TRON |
-| USD Coin | `USDC` | ETH, BSC, POLYGON, ARBITRUM, BASE |
-| Native | `NATIVE` | All (sends the native gas token) |
-
-<Note>
-  More tokens and chains are added regularly. Check `/api/currencies` and `/api/chains` for the live list.
-</Note>
+For native tokens, use `0x0000000000000000000000000000000000000000` as the token address.

@@ -2,3 +2,76 @@
 title: "Create Quote"
 openapi: "POST /api/quote"
 ---
+
+## Example request
+
+```bash
+curl --location 'http://159.223.110.114:3000/api/quote' \
+  --header 'x-api-key: YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "fromChainId": 8453,
+    "toChainId": 56,
+    "fromToken": "0x0000000000000000000000000000000000000000",
+    "toToken": "0x0000000000000000000000000000000000000000",
+    "amount": "1",
+    "recipient": "0xa110c77fa4b07ab601e63ecd65e99ddb8f1df6ec"
+  }'
+```
+
+## Example response
+
+```json
+{
+  "success": true,
+  "quoteId": "5af8532c-5bf4-45c2-b099-1b36e96e91a3",
+  "expiresIn": 300,
+  "send": {
+    "depositAddress": "0x7fa491b5765b5eea6b113a9121c311d780f8c61b",
+    "chain": { "id": 8453, "name": "Base" },
+    "token": {
+      "address": "0x0000000000000000000000000000000000000000",
+      "symbol": "ETH",
+      "name": "Ether",
+      "decimals": 18
+    },
+    "amount": "1"
+  },
+  "receive": {
+    "chain": { "id": 56, "name": "BNB Chain" },
+    "token": {
+      "address": "0x0000000000000000000000000000000000000000",
+      "symbol": "BNB",
+      "name": "Binance Coin",
+      "decimals": 18
+    },
+    "estimatedAmount": "3.119712602260738657",
+    "estimatedAmountUsd": "1992.034702"
+  },
+  "recipient": "0xa110c77fa4b07ab601e63ecd65e99ddb8f1df6ec",
+  "fees": {
+    "totalUsd": "13.4972",
+    "gas": { "amount": "0.000000144979173281", "usd": "0.000291", "currency": "ETH" },
+    "relayer": { "amount": "0.001729747908604578", "usd": "3.469103", "currency": "ETH" },
+    "app": { "amount": "0.005", "usd": "10.027770", "currency": "ETH" }
+  },
+  "estimatedTime": "1s",
+  "steps": 1,
+  "statusUrl": "/api/status/5af8532c-5bf4-45c2-b099-1b36e96e91a3",
+  "depositNote": "Send exactly this amount to the deposit address. Execution begins automatically."
+}
+```
+
+## Response fields
+
+| Field | Description |
+|---|---|
+| `quoteId` | Use this to poll `/api/status/:id` |
+| `expiresIn` | Seconds before the quote expires (300 = 5 mins) |
+| `send.depositAddress` | Address the user must send funds to |
+| `send.amount` | Exact amount to send |
+| `receive.estimatedAmount` | Estimated tokens the recipient gets |
+| `receive.estimatedAmountUsd` | USD value of received amount |
+| `fees.totalUsd` | Total fees in USD |
+| `statusUrl` | Shorthand URL to check payment status |
+| `depositNote` | Human-readable instruction to show the user |

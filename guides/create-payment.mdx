@@ -1,70 +1,99 @@
 ---
 title: "Create a Payment"
-description: "End-to-end walkthrough of initiating a crypto payment."
+description: "End-to-end walkthrough of initiating a cross-chain crypto payment."
 ---
 
 ## Overview
 
-A Direkt payment flow has three steps: **create a quote → user sends funds → you poll for confirmation**.
+A Direkt payment has three steps: **create a quote → user sends funds → poll for completion**.
 
 ## Step 1: Create the quote
 
-Call `POST /api/quote` from your backend (never from the browser — this exposes your API key).
+Call `POST /api/quote` from your **backend** (never from the browser — it exposes your API key).
 
-```js
-const res = await fetch('http://159.223.110.114:3000/api/quote', {
-  method: 'POST',
-  headers: {
-    'Authorization': `Bearer ${process.env.DIREKT_API_KEY}`,
-    'Content-Type': 'application/json',
+```bash
+curl --location 'http://159.223.110.114:3000/api/quote' \
+  --header 'x-api-key: YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "fromChainId": 8453,
+    "toChainId": 56,
+    "fromToken": "0x0000000000000000000000000000000000000000",
+    "toToken": "0x0000000000000000000000000000000000000000",
+    "amount": "1",
+    "recipient": "0xa110c77fa4b07ab601e63ecd65e99ddb8f1df6ec"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "quoteId": "5af8532c-5bf4-45c2-b099-1b36e96e91a3",
+  "expiresIn": 300,
+  "send": {
+    "depositAddress": "0x7fa491b5765b5eea6b113a9121c311d780f8c61b",
+    "chain": { "id": 8453, "name": "Base" },
+    "token": { "symbol": "ETH", "decimals": 18 },
+    "amount": "1"
   },
-  body: JSON.stringify({
-    amount: '100',
-    currency: 'USDT',
-    chain: 'ETH',
-    reference: `order_${orderId}`,
-  }),
-});
-
-const quote = await res.json();
-// { id, depositAddress, amount, currency, chain, expiresAt, ... }
-```
-
-## Step 2: Show the deposit address
-
-Pass `quote.depositAddress` and `quote.amount` to your frontend:
-
-```jsx
-<p>Send exactly {quote.amount} {quote.currency} to:</p>
-<code>{quote.depositAddress}</code>
-<p>on {quote.chain}</p>
-<p>Payment expires at {new Date(quote.expiresAt).toLocaleString()}</p>
-```
-
-## Step 3: Confirm payment
-
-Poll `/api/status/:id` from your backend every 5–10 seconds:
-
-```js
-async function waitForConfirmation(paymentId) {
-  while (true) {
-    const res = await fetch(
-      `http://159.223.110.114:3000/api/status/${paymentId}`,
-      { headers: { Authorization: `Bearer ${process.env.DIREKT_API_KEY}` } }
-    );
-    const { status } = await res.json();
-
-    if (status === 'confirmed' || status === 'completed') {
-      return status; // ✅ fulfil the order
-    }
-    if (status === 'expired' || status === 'failed') {
-      throw new Error(`Payment ${status}`);
-    }
-    await new Promise(r => setTimeout(r, 7000)); // wait 7s
-  }
+  "receive": {
+    "chain": { "id": 56, "name": "BNB Chain" },
+    "token": { "symbol": "BNB", "decimals": 18 },
+    "estimatedAmount": "3.119712602260738657",
+    "estimatedAmountUsd": "1992.034702"
+  },
+  "fees": { "totalUsd": "13.4972" },
+  "estimatedTime": "1s",
+  "statusUrl": "/api/status/5af8532c-5bf4-45c2-b099-1b36e96e91a3",
+  "depositNote": "Send exactly this amount to the deposit address. Execution begins automatically."
 }
 ```
 
+## Step 2: Show the deposit address to your user
+
+```js
+const { send, receive, fees, depositNote, quoteId } = quote;
+
+// Show the user:
+// - send.depositAddress  → where to send funds
+// - send.amount          → exact amount to send
+// - send.token.symbol    → token (e.g. ETH)
+// - send.chain.name      → network (e.g. Base)
+// - receive.estimatedAmount + receive.token.symbol → what they get
+// - fees.totalUsd        → total cost
+// - depositNote          → human-readable instruction
+```
+
 <Tip>
-  Store `quote.id` in your database as soon as you create the quote, before showing the address to the user. This ensures you can always recover the status even if the user closes the tab.
+  Save `quoteId` to your database immediately after creating the quote. This lets you recover payment status even if the user closes the tab.
 </Tip>
+
+## Step 3: Poll for status
+
+```bash
+curl --location 'http://159.223.110.114:3000/api/status/5af8532c-5bf4-45c2-b099-1b36e96e91a3' \
+  --header 'Authorization: Bearer YOUR_API_KEY'
+```
+
+Poll every 5–10 seconds until `status` is `COMPLETED`.
+
+```js
+async function waitForCompletion(quoteId, apiKey) {
+  while (true) {
+    const res = await fetch(
+      `http://159.223.110.114:3000/api/status/${quoteId}`,
+      { headers: { Authorization: `Bearer ${apiKey}` } }
+    );
+    const data = await res.json();
+
+    if (data.status === 'COMPLETED') return data;
+    if (data.status === 'EXPIRED' || data.status === 'FAILED') {
+      throw new Error(`Payment ${data.status}`);
+    }
+
+    await new Promise(r => setTimeout(r, 7000));
+  }
+}
+```

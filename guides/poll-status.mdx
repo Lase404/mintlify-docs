@@ -1,48 +1,86 @@
 ---
 title: "Poll for Status"
-description: "How to track a payment from pending to confirmed."
+description: "Track a payment from deposit to completion."
 ---
 
 ## Status lifecycle
 
 ```
-pending → detected → confirmed → completed
-                              ↘ failed
-pending → expired
+AWAITING_DEPOSIT → DEPOSIT_RECEIVED → EXECUTING → COMPLETED
+                                               ↘ FAILED
+AWAITING_DEPOSIT → EXPIRED
 ```
 
 | Status | Meaning | Action |
 |---|---|---|
-| `pending` | No on-chain activity yet | Keep polling |
-| `detected` | Tx seen, awaiting confirmations | Keep polling |
-| `confirmed` | Safe number of confirmations reached | **Fulfil order** |
-| `completed` | Fully settled | Done |
-| `expired` | Timer ran out, no payment | Show retry UI |
-| `failed` | Wrong amount or chain error | Show error |
+| `AWAITING_DEPOSIT` | No on-chain activity yet | Keep polling |
+| `DEPOSIT_RECEIVED` | Deposit seen on source chain | Keep polling |
+| `EXECUTING` | Cross-chain swap in progress | Keep polling |
+| `COMPLETED` | Funds delivered to recipient | **Fulfil order** |
+| `EXPIRED` | Quote timed out (5 min window) | Show retry UI |
+| `FAILED` | Execution failed | Show error |
 
-## Polling example
+## Request
 
-```js
-const POLL_INTERVAL = 7000; // 7 seconds
+```bash
+curl --location 'http://159.223.110.114:3000/api/status/5af8532c-5bf4-45c2-b099-1b36e96e91a3' \
+  --header 'Authorization: Bearer YOUR_API_KEY'
+```
 
-async function pollStatus(paymentId, apiKey) {
-  const res = await fetch(
-    `http://159.223.110.114:3000/api/status/${paymentId}`,
-    { headers: { Authorization: `Bearer ${apiKey}` } }
-  );
+## Response
 
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
+```json
+{
+  "success": true,
+  "quoteId": "5af8532c-5bf4-45c2-b099-1b36e96e91a3",
+  "status": "AWAITING_DEPOSIT",
+  "createdAt": 1780010048,
+  "expiresAt": 1780010348,
+  "depositAddress": "0x7fa491b5765b5eea6b113a9121c311d780f8c61b",
+  "deposit": null,
+  "gas": null,
+  "execution": {
+    "startedAt": null,
+    "completedAt": null,
+    "outputTxHash": null,
+    "steps": []
+  },
+  "route": {
+    "from": { "chainId": 8453, "chainName": "Base", "token": "0x000...000" },
+    "to": { "chainId": 56, "chainName": "BNB Chain", "token": "0x000...000" },
+    "amount": "1000000000000000000",
+    "recipient": "0xa110c77fa4b07ab601e63ecd65e99ddb8f1df6ec"
+  },
+  "error": null
 }
 ```
 
-## Recommended confirmation counts
+<Note>
+  `execution.outputTxHash` is populated once the swap executes on the destination chain. Use it to link to a block explorer.
+</Note>
 
-| Chain | Confirmations before `confirmed` |
-|---|---|
-| Ethereum | 12 |
-| BNB Smart Chain | 15 |
-| Polygon | 128 |
-| Arbitrum | 1 |
-| Base | 1 |
-| Tron | 19 |
+## Polling implementation
+
+```js
+async function pollStatus(quoteId, apiKey) {
+  const res = await fetch(
+    `http://159.223.110.114:3000/api/status/${quoteId}`,
+    { headers: { Authorization: `Bearer ${apiKey}` } }
+  );
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+// Poll every 7 seconds
+const interval = setInterval(async () => {
+  const data = await pollStatus(quoteId, apiKey);
+
+  if (data.status === 'COMPLETED') {
+    clearInterval(interval);
+    fulfilOrder(data.execution.outputTxHash);
+  } else if (data.status === 'EXPIRED' || data.status === 'FAILED') {
+    clearInterval(interval);
+    showError(data.error);
+  }
+}, 7000);
+```

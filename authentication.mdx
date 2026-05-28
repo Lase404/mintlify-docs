@@ -3,43 +3,36 @@ title: "Authentication"
 description: "How to authenticate with the Direkt API."
 ---
 
-All Direkt API endpoints require a valid API key passed as a **Bearer token** in the `Authorization` header.
+Direkt uses two authentication styles depending on the endpoint.
+
+## Quote endpoint — `x-api-key` header
 
 ```bash
-Authorization: Bearer YOUR_API_KEY
+curl --location 'http://159.223.110.114:3000/api/quote' \
+  --header 'x-api-key: YOUR_API_KEY' \
+  --header 'Content-Type: application/json'
+```
+
+## All other endpoints — Bearer token
+
+```bash
+curl --location 'http://159.223.110.114:3000/api/status/...' \
+  --header 'Authorization: Bearer YOUR_API_KEY'
 ```
 
 ## Getting your API key
 
 1. Sign in to the Direkt dashboard
 2. Go to **Settings → API Keys**
-3. Copy your key — treat it like a password
+3. Copy your key — it starts with `dp_`
 
 <Warning>
-  Never expose your API key in client-side code or public repositories.
+  Never expose your API key in client-side code or public repositories. Always call Direkt from your backend.
 </Warning>
-
-## Using the key
-
-```bash
-curl http://159.223.110.114:3000/api/quote \
-  -H "Authorization: Bearer dp_live_xxxxxxxxxxxx" \
-  -H "Content-Type: application/json" \
-  -d '{ ... }'
-```
 
 ## Error responses
 
-If your key is missing or invalid you'll get:
-
-```json
-{
-  "error": "Unauthorized",
-  "message": "Invalid or missing API key"
-}
-```
-
 | HTTP Code | Reason |
 |---|---|
-| `401` | Missing or malformed `Authorization` header |
-| `403` | Key is valid but revoked or lacks permission |
+| `401` | Missing or invalid API key |
+| `403` | Key revoked or lacks permission |

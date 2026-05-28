@@ -2,3 +2,53 @@
 title: "Get Status"
 openapi: "GET /api/status/{id}"
 ---
+
+## Example request
+
+```bash
+curl --location 'http://159.223.110.114:3000/api/status/5af8532c-5bf4-45c2-b099-1b36e96e91a3' \
+  --header 'Authorization: Bearer YOUR_API_KEY'
+```
+
+## Example response
+
+```json
+{
+  "success": true,
+  "quoteId": "5af8532c-5bf4-45c2-b099-1b36e96e91a3",
+  "status": "AWAITING_DEPOSIT",
+  "createdAt": 1780010048,
+  "expiresAt": 1780010348,
+  "depositAddress": "0x7fa491b5765b5eea6b113a9121c311d780f8c61b",
+  "deposit": null,
+  "gas": null,
+  "execution": {
+    "startedAt": null,
+    "completedAt": null,
+    "outputTxHash": null,
+    "steps": []
+  },
+  "route": {
+    "from": { "chainId": 8453, "chainName": "Base", "token": "0x0000000000000000000000000000000000000000" },
+    "to": { "chainId": 56, "chainName": "BNB Chain", "token": "0x0000000000000000000000000000000000000000" },
+    "amount": "1000000000000000000",
+    "recipient": "0xa110c77fa4b07ab601e63ecd65e99ddb8f1df6ec"
+  },
+  "error": null
+}
+```
+
+## Status values
+
+| Status | Meaning |
+|---|---|
+| `AWAITING_DEPOSIT` | Waiting for the user to send funds |
+| `DEPOSIT_RECEIVED` | Deposit detected on-chain |
+| `EXECUTING` | Cross-chain swap in progress |
+| `COMPLETED` | Funds delivered to recipient |
+| `EXPIRED` | Quote expired before deposit arrived |
+| `FAILED` | Execution failed |
+
+<Note>
+  `route.amount` is in the token's smallest unit (wei for ETH). `send.amount` from the quote is human-readable.
+</Note>

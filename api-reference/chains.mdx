@@ -2,3 +2,31 @@
 title: "List Chains"
 openapi: "GET /api/chains"
 ---
+
+## Example request
+
+```bash
+curl --location 'http://159.223.110.114:3000/api/chains' \
+  --header 'Authorization: Bearer YOUR_API_KEY'
+```
+
+## Example response
+
+```json
+{
+  "success": true,
+  "chains": [
+    { "id": 1,         "name": "Ethereum",     "shortName": "eth",  "nativeToken": "ETH"  },
+    { "id": 10,        "name": "Optimism",      "shortName": "op",   "nativeToken": "ETH"  },
+    { "id": 56,        "name": "BNB Chain",     "shortName": "bnb",  "nativeToken": "BNB"  },
+    { "id": 137,       "name": "Polygon",       "shortName": "matic","nativeToken": "MATIC"},
+    { "id": 8453,      "name": "Base",          "shortName": "base", "nativeToken": "ETH"  },
+    { "id": 42161,     "name": "Arbitrum One",  "shortName": "arb",  "nativeToken": "ETH"  },
+    { "id": 42220,     "name": "Celo",          "shortName": "celo", "nativeToken": "CELO" },
+    { "id": 43114,     "name": "Avalanche",     "shortName": "avax", "nativeToken": "AVAX" },
+    { "id": 792703809, "name": "Solana",        "shortName": "sol",  "nativeToken": "SOL"  }
+  ]
+}
+```
+
+Use the `id` field as `fromChainId` / `toChainId` when creating a quote.
