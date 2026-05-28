@@ -1,0 +1,23 @@
+---
+title: "GET /api/health"
+description: "Check if the Direkt API is online."
+---
+
+## Request
+
+```
+GET http://159.223.110.114:3000/api/health
+```
+
+No authentication required.
+
+## Response
+
+```json
+{
+  "status": "ok",
+  "uptime": 3600
+}
+```
+
+Use this endpoint to monitor uptime or as a readiness check in your deployment pipeline.

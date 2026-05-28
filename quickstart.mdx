@@ -1,47 +1,70 @@
 ---
 title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+description: "Make your first payment request in under 5 minutes."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
+## 1. Get your API key
 
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
+Sign up at the Direkt dashboard and copy your API key from **Settings → API Keys**.
 
-## Prerequisites
+## 2. Create a quote
 
-Before you begin, you must have:
+```bash
+curl -X POST http://159.223.110.114:3000/api/quote \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": "50",
+    "currency": "USDT",
+    "chain": "BSC",
+    "reference": "order_123"
+  }'
+```
 
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
+**Response:**
 
-## Get started
+```json
+{
+  "id": "pay_abc123",
+  "status": "pending",
+  "depositAddress": "0xAbC1234...",
+  "amount": "50",
+  "currency": "USDT",
+  "chain": "BSC",
+  "expiresAt": "2025-01-01T12:30:00Z",
+  "reference": "order_123"
+}
+```
 
-<Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
+## 3. Show the address to your user
 
-    ```bash
-    npm install your-package
-    ```
-  </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
+Display `depositAddress` in your UI. The user sends exactly `amount` of `currency` on the specified `chain` to that address.
 
-    ```bash
-    your-cli init
-    ```
-  </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+## 4. Poll for status
 
-    ```bash
-    your-cli start
-    ```
-  </Step>
-</Steps>
+```bash
+curl http://159.223.110.114:3000/api/status/pay_abc123 \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+Poll every 5–10 seconds until `status` is `confirmed` or `completed`.
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+| Status | Meaning |
+|---|---|
+| `pending` | Waiting for the user to send |
+| `detected` | Transaction seen on-chain, waiting for confirmations |
+| `confirmed` | Enough confirmations — safe to fulfil |
+| `completed` | Fully settled |
+| `expired` | No payment received before expiry |
+| `failed` | Payment failed or wrong amount |
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/authentication">
+    Learn how API keys work
+  </Card>
+  <Card title="Create a payment (guide)" icon="credit-card" href="/guides/create-payment">
+    Full integration walkthrough
+  </Card>
+</CardGroup>

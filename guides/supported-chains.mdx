@@ -1,0 +1,27 @@
+---
+title: "Supported Chains"
+description: "Full list of chains and tokens Direkt supports."
+---
+
+## Chains
+
+| Chain | `chain` value | Native token | EVM? |
+|---|---|---|---|
+| Ethereum | `ETH` | ETH | Yes |
+| BNB Smart Chain | `BSC` | BNB | Yes |
+| Polygon | `POLYGON` | MATIC | Yes |
+| Arbitrum | `ARBITRUM` | ETH | Yes |
+| Base | `BASE` | ETH | Yes |
+| Tron | `TRON` | TRX | No |
+
+## Supported tokens
+
+| Token | `currency` value | Chains |
+|---|---|---|
+| Tether USD | `USDT` | ETH, BSC, POLYGON, TRON |
+| USD Coin | `USDC` | ETH, BSC, POLYGON, ARBITRUM, BASE |
+| Native | `NATIVE` | All (sends the native gas token) |
+
+<Note>
+  More tokens and chains are added regularly. Check `/api/currencies` and `/api/chains` for the live list.
+</Note>

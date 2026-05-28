@@ -1,26 +1,50 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "name": "Direkt",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#4239f3",
+    "light": "#6c63ff",
+    "dark": "#3128d4"
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "pages": ["index", "quickstart"],
+    "tabs": [
+      {
+        "tab": "Getting Started",
+        "pages": ["index", "quickstart", "authentication"]
+      },
+      {
+        "tab": "Guides",
+        "pages": [
+          "guides/create-payment",
+          "guides/poll-status",
+          "guides/supported-chains",
+          "guides/error-handling"
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "pages": [
+          "api-reference/quote",
+          "api-reference/status",
+          "api-reference/chains",
+          "api-reference/currencies",
+          "api-reference/health"
+        ]
+      }
+    ],
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "Telegram",
+          "href": "https://t.me/Lase404",
+          "icon": "telegram"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "GitHub",
+          "href": "https://github.com/lase404",
+          "icon": "github"
         }
       ]
     }
@@ -32,33 +56,19 @@
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "label": "Telegram",
+        "href": "https://t.me/Lase404"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Get API Key",
+      "href": "http://159.223.110.114:3000"
     }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "github": "https://github.com/lase404"
     }
   }
 }

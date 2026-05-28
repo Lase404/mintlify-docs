@@ -1,0 +1,39 @@
+---
+title: "Error Handling"
+description: "How to handle errors from the Direkt API."
+---
+
+## Error format
+
+All errors follow this shape:
+
+```json
+{
+  "error": "ValidationError",
+  "message": "amount must be a positive number"
+}
+```
+
+## Common errors
+
+| HTTP Code | `error` | Fix |
+|---|---|---|
+| `400` | `ValidationError` | Check your request body params |
+| `401` | `Unauthorized` | Check your API key |
+| `404` | `NotFound` | Payment ID doesn't exist |
+| `422` | `UnsupportedChain` | Use a chain from `/api/chains` |
+| `429` | `RateLimited` | Back off and retry after 1 minute |
+| `500` | `InternalError` | Retry with exponential backoff |
+
+## Retry strategy
+
+```js
+async function fetchWithRetry(url, options, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    const res = await fetch(url, options);
+    if (res.status !== 429 && res.status < 500) return res;
+    await new Promise(r => setTimeout(r, 1000 * 2 ** i));
+  }
+  throw new Error('Max retries exceeded');
+}
+```

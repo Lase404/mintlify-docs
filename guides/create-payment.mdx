@@ -1,0 +1,70 @@
+---
+title: "Create a Payment"
+description: "End-to-end walkthrough of initiating a crypto payment."
+---
+
+## Overview
+
+A Direkt payment flow has three steps: **create a quote → user sends funds → you poll for confirmation**.
+
+## Step 1: Create the quote
+
+Call `POST /api/quote` from your backend (never from the browser — this exposes your API key).
+
+```js
+const res = await fetch('http://159.223.110.114:3000/api/quote', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${process.env.DIREKT_API_KEY}`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    amount: '100',
+    currency: 'USDT',
+    chain: 'ETH',
+    reference: `order_${orderId}`,
+  }),
+});
+
+const quote = await res.json();
+// { id, depositAddress, amount, currency, chain, expiresAt, ... }
+```
+
+## Step 2: Show the deposit address
+
+Pass `quote.depositAddress` and `quote.amount` to your frontend:
+
+```jsx
+<p>Send exactly {quote.amount} {quote.currency} to:</p>
+<code>{quote.depositAddress}</code>
+<p>on {quote.chain}</p>
+<p>Payment expires at {new Date(quote.expiresAt).toLocaleString()}</p>
+```
+
+## Step 3: Confirm payment
+
+Poll `/api/status/:id` from your backend every 5–10 seconds:
+
+```js
+async function waitForConfirmation(paymentId) {
+  while (true) {
+    const res = await fetch(
+      `http://159.223.110.114:3000/api/status/${paymentId}`,
+      { headers: { Authorization: `Bearer ${process.env.DIREKT_API_KEY}` } }
+    );
+    const { status } = await res.json();
+
+    if (status === 'confirmed' || status === 'completed') {
+      return status; // ✅ fulfil the order
+    }
+    if (status === 'expired' || status === 'failed') {
+      throw new Error(`Payment ${status}`);
+    }
+    await new Promise(r => setTimeout(r, 7000)); // wait 7s
+  }
+}
+```
+
+<Tip>
+  Store `quote.id` in your database as soon as you create the quote, before showing the address to the user. This ensures you can always recover the status even if the user closes the tab.
+</Tip>

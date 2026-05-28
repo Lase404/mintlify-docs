@@ -1,0 +1,58 @@
+---
+title: "POST /api/quote"
+description: "Create a new payment quote and deposit address."
+---
+
+## Request
+
+```
+POST http://159.223.110.114:3000/api/quote
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+```
+
+### Body parameters
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `amount` | string | Yes | Amount to receive (e.g. `"50"`) |
+| `currency` | string | Yes | Token symbol: `USDT`, `USDC`, `NATIVE` |
+| `chain` | string | Yes | Chain: `ETH`, `BSC`, `POLYGON`, `ARBITRUM`, `BASE`, `TRON` |
+| `reference` | string | No | Your internal order ID |
+
+### Example
+
+```bash
+curl -X POST http://159.223.110.114:3000/api/quote \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": "50",
+    "currency": "USDT",
+    "chain": "BSC",
+    "reference": "order_123"
+  }'
+```
+
+## Response
+
+```json
+{
+  "id": "pay_abc123",
+  "status": "pending",
+  "depositAddress": "0xAbC1234567890abcdef1234567890abcdef123456",
+  "amount": "50",
+  "currency": "USDT",
+  "chain": "BSC",
+  "reference": "order_123",
+  "expiresAt": "2025-01-01T12:30:00Z",
+  "createdAt": "2025-01-01T12:00:00Z"
+}
+```
+
+| Field | Description |
+|---|---|
+| `id` | Unique payment ID — use this to poll status |
+| `status` | Always `pending` on creation |
+| `depositAddress` | Address the user must send funds to |
+| `expiresAt` | ISO timestamp — payment must arrive before this |

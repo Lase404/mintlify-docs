@@ -1,0 +1,48 @@
+---
+title: "Poll for Status"
+description: "How to track a payment from pending to confirmed."
+---
+
+## Status lifecycle
+
+```
+pending → detected → confirmed → completed
+                              ↘ failed
+pending → expired
+```
+
+| Status | Meaning | Action |
+|---|---|---|
+| `pending` | No on-chain activity yet | Keep polling |
+| `detected` | Tx seen, awaiting confirmations | Keep polling |
+| `confirmed` | Safe number of confirmations reached | **Fulfil order** |
+| `completed` | Fully settled | Done |
+| `expired` | Timer ran out, no payment | Show retry UI |
+| `failed` | Wrong amount or chain error | Show error |
+
+## Polling example
+
+```js
+const POLL_INTERVAL = 7000; // 7 seconds
+
+async function pollStatus(paymentId, apiKey) {
+  const res = await fetch(
+    `http://159.223.110.114:3000/api/status/${paymentId}`,
+    { headers: { Authorization: `Bearer ${apiKey}` } }
+  );
+
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+```
+
+## Recommended confirmation counts
+
+| Chain | Confirmations before `confirmed` |
+|---|---|
+| Ethereum | 12 |
+| BNB Smart Chain | 15 |
+| Polygon | 128 |
+| Arbitrum | 1 |
+| Base | 1 |
+| Tron | 19 |
