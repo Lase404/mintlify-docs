@@ -9,7 +9,7 @@ Sign up at the Direkt dashboard and copy your API key from **Settings → API Ke
 
 ## 2. Create a quote
 
-```bash
+```bash expandable lines
 curl -X POST http://159.223.110.114:3000/api/quote \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
@@ -50,7 +50,7 @@ curl http://159.223.110.114:3000/api/status/pay_abc123 \
 Poll every 5–10 seconds until `status` is `confirmed` or `completed`.
 
 | Status | Meaning |
-|---|---|
+| --- | --- |
 | `pending` | Waiting for the user to send |
 | `detected` | Transaction seen on-chain, waiting for confirmations |
 | `confirmed` | Enough confirmations — safe to fulfil |
@@ -64,6 +64,7 @@ Poll every 5–10 seconds until `status` is `confirmed` or `completed`.
   <Card title="Authentication" icon="key" href="/authentication">
     Learn how API keys work
   </Card>
+
   <Card title="Create a payment (guide)" icon="credit-card" href="/guides/create-payment">
     Full integration walkthrough
   </Card>

@@ -1,22 +1,25 @@
 ---
 title: "Introduction"
-description: "Accept crypto payments directly — no custodians, no prefunding."
+description: "Accept cross cross chain crypto payments directly — no custodians, no gas."
 ---
 
 ## What is Direkt?
 
-Direkt is a crypto payment infrastructure API. It generates one-time deposit addresses for your users, monitors incoming on-chain transfers, and gives you real-time status updates — all without you ever holding funds.
+Direkt is a cross chain crypto payment infrastructure API. Bridge assets by sending funds to a deposit address, no wallet connection, gas or signing required.
 
 <CardGroup cols={2}>
   <Card title="Quickstart" icon="bolt" href="/quickstart">
     Go from zero to first payment in 5 minutes
   </Card>
+
   <Card title="API Reference" icon="code" href="/api-reference/quote">
     Full endpoint docs with examples
   </Card>
+
   <Card title="Guides" icon="book" href="/guides/create-payment">
     Step-by-step integration guides
   </Card>
+
   <Card title="Telegram Support" icon="telegram" href="https://t.me/Lase404">
     Get help directly from the team
   </Card>
@@ -26,33 +29,43 @@ Direkt is a crypto payment infrastructure API. It generates one-time deposit add
 
 <Steps>
   <Step title="Create a quote">
-    POST to `/api/quote` with the amount, currency, and destination chain. Direkt returns a unique deposit address.
+    POST to `/api/quote` with the token details, amount, currency, from and destination chain. Direkt returns a unique deposit address.
   </Step>
   <Step title="Show the address to your user">
     Display the address (and QR code) in your UI. The user sends crypto to it from any wallet.
   </Step>
+  <Step title="User Deposit — User sends funds to the deposit address (wallet transfer or exchange withdrawal).">
+  </Step>
+  <Step title="Detect + Sweep — Direkt detects the deposit onchain and sweeps funds to the depository contract.">
+  </Step>
+  <Step title="Fill — Order gets filled on the destination chain from pre-positioned liquidity. Funds are delivered to the recipient address.">
+  </Step>
   <Step title="Poll for status">
     GET `/api/status/:id` until the status is `confirmed` or `completed`.
-  </Step>
-  <Step title="Fulfil the order">
-    Once confirmed, release the goods or service to the user.
   </Step>
 </Steps>
 
 ## Supported chains
 
 | Chain | Symbol | Type |
-|---|---|---|
+| --- | --- | --- |
 | Ethereum | ETH | EVM |
 | BNB Smart Chain | BNB | EVM |
 | Polygon | MATIC | EVM |
 | Arbitrum | ARB | EVM |
 | Base | BASE | EVM |
-| Tron | TRX | Non-EVM |
+| Celo | CELO | EVM |
+| Optimism | OP | EVM |
+| Avalanche | AV | EVM |
 
 ## Key concepts
 
-- **No prefunding** — You never lock up capital. Funds go directly from sender to your wallet.
-- **Non-custodial** — Direkt never holds your money.
-- **One-time addresses** — Every payment gets a fresh address, keeping transactions private and traceable.
-- **Webhook-ready** — Poll the status endpoint or wire up a webhook for push notifications.
+- **No signing required**: Users bridge/swap by sending funds to an address, no wallet connection needed.
+- **Works cross-chain and same-chain**: Supports both bridges and swaps.
+- **Ideal use cases**: CEX withdrawals, fiat onramps, and headless systems where the sender can't sign.
+- **UX**: Identical to a normal token transfer.
+
+## \
+**Quote Regeneration**
+
+When funds arrive at a deposit address, Direkt evaluates what was sent versus what was originally quoted. How mismatches are handled varies.
