@@ -11,11 +11,13 @@
       "description": "Production"
     }
   ],
-  "security": [
-    { "bearerAuth": [] }
-  ],
   "components": {
     "securitySchemes": {
+      "apiKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      },
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer"
@@ -28,6 +30,7 @@
         "summary": "Create a quote",
         "description": "Generate a one-time deposit address for a cross-chain payment.",
         "operationId": "createQuote",
+        "security": [{ "apiKeyHeader": [] }],
         "requestBody": {
           "required": true,
           "content": {
@@ -36,36 +39,12 @@
                 "type": "object",
                 "required": ["fromChainId", "toChainId", "fromToken", "toToken", "amount", "recipient"],
                 "properties": {
-                  "fromChainId": {
-                    "type": "integer",
-                    "description": "Source chain ID",
-                    "example": 8453
-                  },
-                  "toChainId": {
-                    "type": "integer",
-                    "description": "Destination chain ID",
-                    "example": 56
-                  },
-                  "fromToken": {
-                    "type": "string",
-                    "description": "Token address on source chain. Use 0x000...000 for native token.",
-                    "example": "0x0000000000000000000000000000000000000000"
-                  },
-                  "toToken": {
-                    "type": "string",
-                    "description": "Token address on destination chain. Use 0x000...000 for native token.",
-                    "example": "0x0000000000000000000000000000000000000000"
-                  },
-                  "amount": {
-                    "type": "string",
-                    "description": "Amount in human-readable units",
-                    "example": "1"
-                  },
-                  "recipient": {
-                    "type": "string",
-                    "description": "Wallet address to receive funds on destination chain",
-                    "example": "0xa110c77fa4b07ab601e63edEAd99ddb8f1df22c"
-                  }
+                  "fromChainId": { "type": "integer", "description": "Source chain ID", "example": 8453 },
+                  "toChainId": { "type": "integer", "description": "Destination chain ID", "example": 56 },
+                  "fromToken": { "type": "string", "description": "Token address on source chain. Use 0x000...000 for native token.", "example": "0x0000000000000000000000000000000000000000" },
+                  "toToken": { "type": "string", "description": "Token address on destination chain. Use 0x000...000 for native token.", "example": "0x0000000000000000000000000000000000000000" },
+                  "amount": { "type": "string", "description": "Amount in human-readable units", "example": "1" },
+                  "recipient": { "type": "string", "description": "Wallet address to receive funds on destination chain", "example": "0xa110c77fa4b07ab601e63ecd65e99ddb8f1df6ec" }
                 }
               }
             }
@@ -73,23 +52,51 @@
         },
         "responses": {
           "200": {
-            "description": "Quote created",
+            "description": "Quote created successfully",
             "content": {
               "application/json": {
+                "example": {
+                  "success": true,
+                  "quoteId": "5af8532c-5bf4-45c2-b099-1b36e96e91a3",
+                  "expiresIn": 300,
+                  "send": {
+                    "depositAddress": "0x7fa491b5765b5eea6b113a9121c311d780f8c61b",
+                    "chain": { "id": 8453, "name": "Base" },
+                    "token": { "address": "0x0000000000000000000000000000000000000000", "symbol": "ETH", "name": "Ether", "decimals": 18 },
+                    "amount": "1"
+                  },
+                  "receive": {
+                    "chain": { "id": 56, "name": "BNB Chain" },
+                    "token": { "address": "0x0000000000000000000000000000000000000000", "symbol": "BNB", "name": "Binance Coin", "decimals": 18 },
+                    "estimatedAmount": "3.119712602260738657",
+                    "estimatedAmountUsd": "1992.034702"
+                  },
+                  "recipient": "0xa110c77fa4b07ab601e63ecd65e99ddb8f1df6ec",
+                  "fees": {
+                    "totalUsd": "13.4972",
+                    "gas": { "amount": "0.000000144979173281", "usd": "0.000291", "currency": "ETH" },
+                    "relayer": { "amount": "0.001729747908604578", "usd": "3.469103", "currency": "ETH" },
+                    "app": { "amount": "0.005", "usd": "10.027770", "currency": "ETH" }
+                  },
+                  "estimatedTime": "1s",
+                  "steps": 1,
+                  "statusUrl": "/api/status/5af8532c-5bf4-45c2-b099-1b36e96e91a3",
+                  "depositNote": "Send exactly this amount to the deposit address. Execution begins automatically."
+                },
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "example": "pay_abc123" },
-                    "status": { "type": "string", "example": "pending" },
-                    "depositAddress": { "type": "string", "example": "0xAbC1234567890abcdef1234567890abcdef123456" },
-                    "fromChainId": { "type": "integer", "example": 8453 },
-                    "toChainId": { "type": "integer", "example": 56 },
-                    "fromToken": { "type": "string" },
-                    "toToken": { "type": "string" },
-                    "amount": { "type": "string", "example": "1" },
+                    "success": { "type": "boolean" },
+                    "quoteId": { "type": "string" },
+                    "expiresIn": { "type": "integer" },
+                    "send": { "type": "object" },
+                    "receive": { "type": "object" },
                     "recipient": { "type": "string" },
-                    "expiresAt": { "type": "string", "example": "2025-01-01T12:30:00Z" },
-                    "createdAt": { "type": "string", "example": "2025-01-01T12:00:00Z" }
+                    "fees": { "type": "object" },
+                    "estimatedTime": { "type": "string" },
+                    "steps": { "type": "integer" },
+                    "statusUrl": { "type": "string" },
+                    "depositNote": { "type": "string" }
                   }
                 }
               }
@@ -101,15 +108,16 @@
     "/api/status/{id}": {
       "get": {
         "summary": "Get payment status",
-        "description": "Fetch the current status of a payment by ID.",
+        "description": "Fetch the current status of a payment by quote ID.",
         "operationId": "getStatus",
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Payment ID returned from POST /api/quote",
-            "schema": { "type": "string", "example": "pay_abc123" }
+            "description": "Quote ID returned from POST /api/quote",
+            "schema": { "type": "string", "example": "5af8532c-5bf4-45c2-b099-1b36e96e91a3" }
           }
         ],
         "responses": {
@@ -117,18 +125,38 @@
             "description": "Payment status",
             "content": {
               "application/json": {
+                "example": {
+                  "success": true,
+                  "quoteId": "5af8532c-5bf4-45c2-b099-1b36e96e91a3",
+                  "status": "AWAITING_DEPOSIT",
+                  "createdAt": 1780010048,
+                  "expiresAt": 1780010348,
+                  "depositAddress": "0x7fa491b5765b5eea6b113a9121c311d780f8c61b",
+                  "deposit": null,
+                  "gas": null,
+                  "execution": { "startedAt": null, "completedAt": null, "outputTxHash": null, "steps": [] },
+                  "route": {
+                    "from": { "chainId": 8453, "chainName": "Base", "token": "0x0000000000000000000000000000000000000000" },
+                    "to": { "chainId": 56, "chainName": "BNB Chain", "token": "0x0000000000000000000000000000000000000000" },
+                    "amount": "1000000000000000000",
+                    "recipient": "0xa110c77fa4b07ab601e63ecd65e99ddb8f1df6ec"
+                  },
+                  "error": null
+                },
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string" },
-                    "status": { "type": "string", "enum": ["pending", "detected", "confirmed", "completed", "expired", "failed"] },
-                    "amount": { "type": "string" },
-                    "fromChainId": { "type": "integer" },
-                    "toChainId": { "type": "integer" },
-                    "txHash": { "type": "string" },
-                    "confirmations": { "type": "integer" },
-                    "recipient": { "type": "string" },
-                    "confirmedAt": { "type": "string" }
+                    "success": { "type": "boolean" },
+                    "quoteId": { "type": "string" },
+                    "status": { "type": "string", "enum": ["AWAITING_DEPOSIT", "DEPOSIT_RECEIVED", "EXECUTING", "COMPLETED", "EXPIRED", "FAILED"] },
+                    "createdAt": { "type": "integer" },
+                    "expiresAt": { "type": "integer" },
+                    "depositAddress": { "type": "string" },
+                    "deposit": { "type": "object", "nullable": true },
+                    "gas": { "type": "object", "nullable": true },
+                    "execution": { "type": "object" },
+                    "route": { "type": "object" },
+                    "error": { "type": "string", "nullable": true }
                   }
                 }
               }
@@ -142,48 +170,31 @@
         "summary": "List supported chains",
         "description": "Returns all chains Direkt supports.",
         "operationId": "getChains",
+        "security": [{ "bearerAuth": [] }],
         "responses": {
           "200": {
-            "description": "List of chains",
+            "description": "List of supported chains",
             "content": {
               "application/json": {
+                "example": {
+                  "success": true,
+                  "chains": [
+                    { "id": 1, "name": "Ethereum", "shortName": "eth", "nativeToken": "ETH" },
+                    { "id": 10, "name": "Optimism", "shortName": "op", "nativeToken": "ETH" },
+                    { "id": 56, "name": "BNB Chain", "shortName": "bnb", "nativeToken": "BNB" },
+                    { "id": 137, "name": "Polygon", "shortName": "matic", "nativeToken": "MATIC" },
+                    { "id": 8453, "name": "Base", "shortName": "base", "nativeToken": "ETH" },
+                    { "id": 42161, "name": "Arbitrum One", "shortName": "arb", "nativeToken": "ETH" },
+                    { "id": 42220, "name": "Celo", "shortName": "celo", "nativeToken": "CELO" },
+                    { "id": 43114, "name": "Avalanche", "shortName": "avax", "nativeToken": "AVAX" },
+                    { "id": 792703809, "name": "Solana", "shortName": "sol", "nativeToken": "SOL" }
+                  ]
+                },
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": { "type": "string" },
-                      "name": { "type": "string" },
-                      "chainId": { "type": "integer" },
-                      "nativeToken": { "type": "string" }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/currencies": {
-      "get": {
-        "summary": "List supported tokens",
-        "description": "Returns all tokens and the chains they are available on.",
-        "operationId": "getCurrencies",
-        "responses": {
-          "200": {
-            "description": "List of tokens",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "symbol": { "type": "string" },
-                      "name": { "type": "string" },
-                      "chains": { "type": "array", "items": { "type": "string" } }
-                    }
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "chains": { "type": "array", "items": { "type": "object" } }
                   }
                 }
               }

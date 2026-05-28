@@ -30,7 +30,6 @@
           "api-reference/quote",
           "api-reference/status",
           "api-reference/chains",
-          "api-reference/currencies",
           "api-reference/health"
         ]
       }
@@ -55,12 +54,7 @@
     "dark": "/logo/dark.svg"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Telegram",
-        "href": "https://t.me/Lase404"
-      }
-    ],
+    "links": [{ "label": "Telegram", "href": "https://t.me/Lase404" }],
     "primary": {
       "type": "button",
       "label": "Get API Key",
