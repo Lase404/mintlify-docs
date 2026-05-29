@@ -79,6 +79,8 @@
   "font": {
     "headings": {
       "family": "Instrument Serif",
+      "source": "https://fonts.gstatic.com/s/instrumentserif/v5/jizBRFtNs2ka5fXjeivQ4LroWlx-6zUTjg.woff2",
+      "format": "woff2",
       "weight": 400
     }
   }
