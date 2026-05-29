@@ -17,10 +17,6 @@
         "type": "apiKey",
         "in": "header",
         "name": "x-api-key"
-      },
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
       }
     }
   },
@@ -30,11 +26,6 @@
         "summary": "Create a quote",
         "description": "Generate a one-time deposit address for a cross-chain payment.",
         "operationId": "createQuote",
-        "security": [
-          {
-            "apiKeyHeader": []
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -195,11 +186,6 @@
         "summary": "Get payment status",
         "description": "Fetch the current status of a payment by quote ID.",
         "operationId": "getStatus",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
         "parameters": [
           {
             "name": "id",
@@ -308,11 +294,6 @@
         "summary": "List supported chains",
         "description": "Returns all chains Direkt supports.",
         "operationId": "getChains",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
         "responses": {
           "200": {
             "description": "List of supported chains",
@@ -432,11 +413,6 @@
         "summary": "Search currencies",
         "description": "Search for tokens by address, symbol, or chain. Proxies to the Relay currency index.",
         "operationId": "getCurrencies",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
         "requestBody": {
           "required": false,
           "content": {
@@ -538,5 +514,10 @@
         }
       }
     }
-  }
+  },
+  "security": [
+    {
+      "apiKeyHeader": []
+    }
+  ]
 }

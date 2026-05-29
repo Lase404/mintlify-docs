@@ -3,21 +3,19 @@ title: "Authentication"
 description: "How to authenticate with the Direkt API."
 ---
 
-Direkt uses two authentication styles depending on the endpoint.
+All Direkt API endpoints use the `x-api-key` header for authentication.
 
-## Quote endpoint — `x-api-key` header
+```bash
+--header 'x-api-key: YOUR_API_KEY'
+```
+
+## Example
 
 ```bash
 curl --location 'http://159.223.110.114:3000/api/quote' \
   --header 'x-api-key: YOUR_API_KEY' \
-  --header 'Content-Type: application/json'
-```
-
-## All other endpoints — Bearer token
-
-```bash
-curl --location 'http://159.223.110.114:3000/api/status/...' \
-  --header 'Authorization: Bearer YOUR_API_KEY'
+  --header 'Content-Type: application/json' \
+  --data '{ ... }'
 ```
 
 ## Getting your API key
