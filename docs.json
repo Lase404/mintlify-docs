@@ -7,7 +7,10 @@
     "light": "#6c63ff",
     "dark": "#3128d4"
   },
-  "favicon": "/favicon.svg",
+  "favicon": {
+    "light": "/images/image640(Traced).svg",
+    "dark": "/images/image640(Traced).svg"
+  },
   "openapi": "/openapi.json",
   "navigation": {
     "tabs": [
@@ -73,7 +76,7 @@
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/lase404"
+      "x": "https:/x.com/v0idscript"
     }
   },
   "font": {
@@ -83,5 +86,11 @@
       "format": "woff2",
       "weight": 400
     }
+  },
+  "fonts": {
+    "family": "Instrument Serif",
+    "weight": 400,
+    "source": "https://fonts.gstatic.com/s/instrumentserif/v5/jizBRFtNs2ka5fXjeivQ4LroWlx-6zUTjg.woff2",
+    "format": "woff2"
   }
 }
