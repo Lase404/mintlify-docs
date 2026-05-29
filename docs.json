@@ -86,10 +86,5 @@
       "format": "woff2",
       "weight": 400
     }
-  },
-  "fonts": {
-    "heading": {
-      "family": "Work Sans"
-    }
   }
 }
