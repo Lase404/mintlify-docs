@@ -411,7 +411,7 @@
     "/api/currencies": {
       "post": {
         "summary": "Search currencies",
-        "description": "Search for tokens by address, symbol, or chain. Proxies to the Relay currency index.",
+        "description": "Search for tokens by address, symbol, or chain.",
         "operationId": "getCurrencies",
         "requestBody": {
           "required": false,
