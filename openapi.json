@@ -462,10 +462,6 @@
                     "type": "boolean",
                     "description": "Use 3rd party APIs for unlisted tokens",
                     "example": true
-                  },
-                  "depositAddressOnly": {
-                    "type": "boolean",
-                    "description": "Only return deposit-address-supported tokens"
                   }
                 }
               }
