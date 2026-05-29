@@ -88,12 +88,9 @@
     }
   },
   "fonts": {
-    "heading": {
-      "family": "Instrument Serif",
-      "weight": 700
-    },
-    "body": {
-      "family": "Montserrat"
-    }
+    "family": "Instrument Serif",
+    "weight": 700,
+    "source": "https://fonts.gstatic.com/s/instrumentserif/v5/jizBRFtNs2ka5fXjeivQ4LroWlx-6zUTjg.woff2",
+    "format": "woff2"
   }
 }
