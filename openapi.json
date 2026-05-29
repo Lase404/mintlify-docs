@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://159.223.110.114:3000",
+      "url": "https://godirekt.xyz",
       "description": "Production"
     }
   ],

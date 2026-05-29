@@ -12,7 +12,7 @@ A Direkt payment has three steps: **create a quote → user sends funds → poll
 Call `POST /api/quote` from your **backend** (never from the browser — it exposes your API key).
 
 ```bash
-curl --location 'http://159.223.110.114:3000/api/quote' \
+curl --location 'https://godirekt.xyz/api/quote' \
   --header 'x-api-key: YOUR_API_KEY' \
   --header 'Content-Type: application/json' \
   --data '{
@@ -73,7 +73,7 @@ const { send, receive, fees, depositNote, quoteId } = quote;
 ## Step 3: Poll for status
 
 ```bash
-curl --location 'http://159.223.110.114:3000/api/status/5af8532c-5bf4-45c2-b099-1b36e96e91a3' \
+curl --location 'https://godirekt.xyz/api/status/5af8532c-5bf4-45c2-b099-1b36e96e91a3' \
   --header 'x-api-key: YOUR_API_KEY'
 ```
 
@@ -83,7 +83,7 @@ Poll every 5–10 seconds until `status` is `COMPLETED`.
 async function waitForCompletion(quoteId, apiKey) {
   while (true) {
     const res = await fetch(
-      `http://159.223.110.114:3000/api/status/${quoteId}`,
+      `https://godirekt.xyz/api/status/${quoteId}`,
       { headers: { Authorization: `Bearer ${apiKey}` } }
     );
     const data = await res.json();
