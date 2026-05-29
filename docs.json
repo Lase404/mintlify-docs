@@ -75,5 +75,11 @@
     "socials": {
       "github": "https://github.com/lase404"
     }
+  },
+  "font": {
+    "headings": {
+      "family": "Instrument Serif",
+      "weight": 400
+    }
   }
 }
