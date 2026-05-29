@@ -1,0 +1,92 @@
+---
+title: "Search Currencies"
+openapi: "POST /api/currencies"
+---
+
+Search for any token by address, name, or symbol across supported chains.
+
+## Search by term
+
+```bash
+curl --location 'http://159.223.110.114:3000/api/currencies' \
+  --header 'Authorization: Bearer YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "chainIds": [56],
+    "term": "usdt",
+    "verified": true,
+    "limit": 20,
+    "useExternalSearch": true
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "currencies": [
+    {
+      "chainId": 56,
+      "address": "0x55d398326f99059ff775485246999027b3197955",
+      "symbol": "USDT",
+      "name": "Tether USD",
+      "decimals": 18,
+      "vmType": "evm",
+      "metadata": {
+        "logoURI": "https://coin-images.coingecko.com/coins/images/39963/large/usdt.png",
+        "verified": true
+      }
+    }
+  ]
+}
+```
+
+## Search by contract address
+
+```bash
+curl --location 'http://159.223.110.114:3000/api/currencies' \
+  --header 'Authorization: Bearer YOUR_API_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "chainIds": [56],
+    "address": "0x6B6f93a12705b6eB60490A8b8a9aC15b3B1ce0f2",
+    "limit": 20,
+    "useExternalSearch": true
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "currencies": [
+    {
+      "chainId": 56,
+      "address": "0x6b6f93a12705b6eb60490a8b8a9ac15b3b1ce0f2",
+      "symbol": "SNR",
+      "name": "StableNaira",
+      "decimals": 2,
+      "vmType": "evm",
+      "metadata": {
+        "logoURI": "https://assets.geckoterminal.com/bwa1ujpgkc562s8zewby73jmnekc",
+        "verified": false
+      }
+    }
+  ]
+}
+```
+
+## Response fields
+
+| Field | Description |
+|---|---|
+| `chainId` | Chain the token lives on |
+| `address` | Token contract address |
+| `symbol` | Token ticker (e.g. `USDT`) |
+| `name` | Full token name |
+| `decimals` | Token decimal places |
+| `vmType` | VM type: `evm`, `svm`, `tvm` etc. |
+| `metadata.verified` | Whether the token is verified |
+| `metadata.logoURI` | Token logo image URL |
