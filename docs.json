@@ -65,7 +65,7 @@
     "links": [
       {
         "label": "Telegram",
-        "href": "https://t.me/Lase404"
+        "href": "https://t.me/tolunga"
       }
     ],
     "primary": {
@@ -88,9 +88,12 @@
     }
   },
   "fonts": {
-    "family": "Instrument Serif",
-    "weight": 600,
-    "source": "https://fonts.gstatic.com/s/instrumentserif/v5/jizBRFtNs2ka5fXjeivQ4LroWlx-6zUTjg.woff2",
-    "format": "woff2"
+    "heading": {
+      "family": "Instrument Serif",
+      "weight": 700
+    },
+    "body": {
+      "family": "Montserrat"
+    }
   }
 }
