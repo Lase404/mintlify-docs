@@ -88,13 +88,9 @@
     }
   },
   "fonts": {
-    "heading": {
-      "family": "Instrument Serif",
-      "weight": 600
-    },
-    "body": {
-      "family": "Instrument Serif",
-      "weight": 600
-    }
+    "family": "Instrument Serif",
+    "weight": 600,
+    "source": "https://fonts.gstatic.com/s/instrumentserif/v5/jizBRFtNs2ka5fXjeivQ4LroWlx-6zUTjg.woff2",
+    "format": "woff2"
   }
 }
